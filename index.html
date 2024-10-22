@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Future Goal Tracker</title>
+  <style>
+    body {
+      background-color: #1c1c1c;
+      color: #ffa432;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      background-color: #2b2b2b;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    input {
+      margin: 10px 0;
+      padding: 10px;
+      width: 80%;
+      max-width: 300px;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #ffa432;
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #ff8b00;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Set Your Future Goal</h1>
+    <form id="goalForm">
+      <input type="text" id="goal" placeholder="What do you want to achieve?" required /><br />
+      <input type="number" id="days" placeholder="In how many days?" required /><br />
+      <button type="submit">Submit</button>
+    </form>
+    <p id="response" style="margin-top: 20px;"></p>
+  </div>
+
+  <script>
+    document.getElementById('goalForm').addEventListener('submit', async function (e) {
+        e.preventDefault(); // Prevent page reload
+
+        const goal = document.getElementById('goal').value;
+        const days = document.getElementById('days').value;
+
+        try {
+            const res = await fetch('/generate-plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ goal, days })
+            });
+
+            const data = await res.json();
+
+            if (data.redirect) {
+                window.location.href = data.redirect; // Redirect to cards.html
+            } else {
+                alert('Error generating the plan. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error generating the plan. Please try again.');
+        }
+    });
+</script>
+
+</body>
+</html>
