@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        /* Center and style the body */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+            background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%); /* Default background for Pomodoro */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: background-image 0.5s ease; /* Smooth transition for background image change */
+        }
+
+        /* Glassmorphism effect container */
+        .glass-container {
+            background: rgba(122, 122, 122, 0.1);
+            border-radius: 50px; /* Increased border radius for softer edges */
+            padding: 100px; /* Increased padding */
+            backdrop-filter: blur(10px); /* Increased blur effect */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* Slightly larger shadow */
+            text-align: center;
+            width: 500px; /* Increased width */
+            height: 250px; /* Added height for more space */
+        }
+
+        /* Mode buttons style */
+        .mode-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .mode-button {
+            font-size: 1.5em; /* Increased font size for visibility */
+            padding: 20px 15px; /* Slightly larger padding */
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 9px;
+            color: white;
+            background-color: rgba(236, 237, 240, 0.5);
+            border: none;
+        }
+
+        /* Timer style */
+        #timer {
+            font-size: 4em; /* Increased font size for better visibility */
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Start and Restart button styles */
+        button {
+            font-size: 1.2em; /* Increased font size */
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <!-- Mode buttons above the timer -->
+        <div class="mode-buttons">
+            <button class="mode-button" onclick="setMode('pomodoro')">Pomodoro</button>
+            <button class="mode-button" onclick="setMode('shortBreak')">Short Break</button>
+            <button class="mode-button" onclick="setMode('longBreak')">Long Break</button>
+        </div>
+        
+        <!-- Timer display -->
+        <div id="timer">25:00</div>
+        
+        <!-- Start and Restart buttons -->
+        <button id="startButton">Start Timer</button>
+        <button id="restartButton">Restart Timer</button>
+    </div>
+
+    <script>
+        let countdown;
+        let timerInterval;
+        const durations = {
+            pomodoro: 25 * 60,    // 25 minutes
+            shortBreak: 5 * 60,   // 5 minutes
+            longBreak: 10 * 60    // 10 minutes
+        };
+        let currentMode = 'pomodoro';
+
+        // Initialize timer display
+        function displayTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            document.getElementById("timer").textContent = 
+                `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Set mode and update timer display
+        function setMode(mode) {
+            clearInterval(timerInterval); // Stop any running timer
+            currentMode = mode;
+            countdown = durations[mode];
+            displayTime(countdown);
+            document.getElementById("startButton").disabled = false;
+
+            // Change background image based on mode
+            if (mode === 'pomodoro') {
+                document.body.style.backgroundImage = 'linear-gradient(to bottom right, #18293c, #aef1ee)'; // Pomodoro background
+            } else if (mode === 'shortBreak') {
+                document.body.style.backgroundImage = 'linear-gradient(to bottom right, #aef1ee, #e6f7e9)'; // Short Break background
+            } else if (mode === 'longBreak') {
+                document.body.style.backgroundImage = 'linear-gradient(to bottom right, #e02f6b, #d63d70)'; // Long Break background
+            }
+        }
+
+        // Start the timer countdown
+        function startTimer() {
+            document.getElementById("startButton").disabled = true;
+            timerInterval = setInterval(() => {
+                countdown--;
+                displayTime(countdown);
+
+                // Stop timer when it reaches zero
+                if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById("timer").textContent = "Time's up!";
+                }
+            }, 1000);
+        }
+
+        // Restart the timer based on the current mode
+        function restartTimer() {
+            clearInterval(timerInterval);
+            countdown = durations[currentMode];
+            displayTime(countdown);
+            document.getElementById("startButton").disabled = false;
+        }
+
+        // Event listeners for start and restart buttons
+        document.getElementById("startButton").addEventListener("click", startTimer);
+        document.getElementById("restartButton").addEventListener("click", restartTimer);
+
+        // Initialize the timer with Pomodoro mode on page load
+        setMode("pomodoro");
+    </script>
+</body>
+</html>

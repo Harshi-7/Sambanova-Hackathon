@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #fff; /* Text color for better contrast */
+            background: #f8f7f9; /* Background color */
+        }
+        .intro {
+            color: #323C5C;
+            font-size: 40px;
+            font-weight: bold;
+            max-width: 1000px; /* Set a max width */
+            margin: 0 auto; 
+            text-align: center; /* Center the text */
+        }
+        .content {
+            color: #323C5C;
+            font-size: 25px;
+            max-width: 1000px; /* Set a max width */
+            margin: 20px auto; /* Center the text */
+            text-align: center; /* Center the text */
+        }
+        .feature-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            gap: 30px; /* spacing between items */
+            color: #323C5C;
+            max-width: 1000px; /* Set a max width */
+            margin: 20px auto; /* Center the grid */
+        }
+        .feature {
+            background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%); /* Semi-transparent background for features */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #323C5C;
+            border-radius: 25px;
+            padding: 60px;
+            text-align: center;
+        }
+
+        /* background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);  */
+        .emoji {
+            font-size: 2em;
+        }
+        .Feature-name {
+            font-size: 21px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .Feature-text {
+            color: #323C5C; /* Lighter color for feature text */
+        }
+
+        /* Responsive layout adjustments */
+        @media (max-width: 800px) {
+            .feature-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns for smaller screens */
+            }
+        }
+
+        @media (max-width: 500px) {
+            .feature-container {
+                grid-template-columns: 1fr; /* 1 column for very small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="intro">Designed for you <br> to get more done</div>
+    <div class="content">We’re here to redefine the way you work and <br> recharge every day, without overcomplicating it.</div>
+
+    <div class="feature-container">
+        <div class="feature">
+            <div class="emoji">⏱️</div>
+            <div class="Feature-name">Focus Timer</div>
+            <div class="Feature-text">Boost your productivity with a clear reorderable to-do list, with one priority displayed at a&nbsp;time.</div>   
+        </div> 
+
+        <div class="feature">
+            <div class="emoji">✔️</div>
+            <div class="Feature-name">Focus To-Dos</div>
+            <div class="Feature-text">Get right in the zone in seconds. Pick from Pomodoro, simple countdown, or stopwatch.</div>   
+        </div> 
+
+        <div class="feature">
+            <div class="emoji">📊</div>
+            <div class="Feature-name">Focus Stats</div>
+            <div class="Feature-text">Stay on track and gain insights into your productivity with daily, weekly, and monthly&nbsp;stats.</div>   
+        </div> 
+
+        <div class="feature">
+            <div class="emoji">🌎</div>
+            <div class="Feature-name">Beautiful Themes</div>
+            <div class="feature-text">Transport yourself to dreamy worldwide destinations or minimalist&nbsp;backdrops.</div>  
+        </div> 
+
+        <div class="feature">
+            <div class="emoji">👏</div>
+            <div class="Feature-name">Motivational Quotes</div>
+            <div class="feature-text">Get an extra boost with daily motivational, self-care, and gratitude&nbsp;quotes.</div>
+        </div> 
+
+        <div class="feature">
+            <div class="emoji">🚀</div>
+            <div class="Feature-name">And lots more</div>
+            <div class="Feature-text">Picture-in-picture, clear mode, fun alert sounds — the list goes on. Check them out for&nbsp;yourself!</div>   
+        </div> 
+    </div>
+
+</body>
+</html>
