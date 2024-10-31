@@ -14,7 +14,11 @@ if not api_key:
 
 @app.route('/')
 def index():
-    return render_template('index.html')  # Load index.html from the same folder
+    return redirect(url_for('features'))  # Redirect to the features page
+
+@app.route('/features')
+def features():
+    return render_template('features.html')  # Load features.html from the same folder
 
 @app.route('/generate-plan', methods=['POST'])
 def generate_plan():
@@ -24,14 +28,12 @@ def generate_plan():
 
     # Create a day-specific prompt for the SambaNova API
     prompt = (
-    f"Generate a detailed day-wise plan to achieve the goal '{goal}' in {days} days. "
-    f"For each day, provide a specific task that helps in achieving the goal, along with 10 practice questions or exercises "
-    f"that focus on the day's task. Ensure the questions are varied and challenging"
-    f"Format the response as 'Day 1: Task for Day 1. Practice Questions: 1. Question 1, 2. Question 2, ..., 10. Question 10\\n"
-    f"Day 2: Task for Day 2. Practice Questions: 1. Question 1, 2. Question 2, ..., 10. Question 10' and continue in this manner for each day."
-)
-
-
+        f"Generate a detailed day-wise plan to achieve the goal '{goal}' in {days} days. "
+        f"For each day, provide a specific task that helps in achieving the goal, along with 10 practice questions or exercises "
+        f"that focus on the day's task. Ensure the questions are varied and challenging. "
+        f"Format the response as 'Day 1: Task for Day 1. Practice Questions: 1. Question 1, 2. Question 2, ..., 10. Question 10\\n"
+        f"Day 2: Task for Day 2. Practice Questions: 1. Question 1, 2. Question 2, ..., 10. Question 10' and continue in this manner for each day."
+    )
 
     # Define the API endpoint and model
     base_url = "https://api.sambanova.ai/v1/chat/completions"
@@ -113,6 +115,69 @@ def generate_plan():
         print(f"Error: {e}")
         return jsonify({'error': 'Failed to generate plan.'}), 500
 
+@app.route('/facts')
+def facts():
+    # Create a prompt for generating 50 facts
+    prompt = (
+        "Generate 50 unique and interesting facts on a variety of topics. Each fact should be different from the others. "
+        "Format the response as a list, with each fact on a new line."
+    )
+
+    # Define the API endpoint and model
+    base_url = "https://api.sambanova.ai/v1/chat/completions"
+    model = "Meta-Llama-3.1-8B-Instruct"
+
+    # Prepare the payload
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.1,
+        "top_p": 0.1,
+        "stream": True
+    }
+
+    # Set the request headers
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    response_text = ""
+    try:
+        # Make a request to the SambaNova API
+        response = requests.post(base_url, json=payload, headers=headers, stream=True)
+        response.raise_for_status()  # Check for HTTP errors
+
+        # Stream and accumulate content from the response
+        for chunk in response.iter_lines():
+            if chunk:
+                chunk_decoded = chunk.decode('utf-8').lstrip('data: ')
+                if chunk_decoded == "[DONE]":
+                    break
+
+                try:
+                    data = json.loads(chunk_decoded)
+                    content = data['choices'][0]['delta'].get('content', '')
+                    response_text += content
+                except json.JSONDecodeError:
+                    print("Could not decode JSON from chunk:", chunk_decoded)
+
+        # Split the response into a list of facts
+        facts_list = response_text.strip().split('\n')
+        session['facts'] = facts_list  # Store facts in session
+
+        return render_template('facts.html', facts=facts_list)  # Render facts.html with the facts
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': 'Failed to generate facts.'}), 500
+
+@app.route('/timer')
+def timer():
+    return render_template('timer.html')  # Load timer.html from the same folder
 
 @app.route('/cards')
 def cards():

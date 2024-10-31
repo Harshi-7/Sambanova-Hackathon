@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f7f9;
+            color: #323C5C;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #FFEBD8;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generated Facts</h1>
+    <ul>
+        {% for fact in facts %}
+            <li>{{ fact }}</li>
+        {% endfor %}
+    </ul>
+    <div style="text-align: center;">
+        <a href="{{ url_for('features') }}">Back to Features</a>
+    </div>
+</body>
+</html>
+
