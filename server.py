@@ -182,6 +182,72 @@ def facts():
         print(f"Error: {e}")
         return jsonify({'error': 'Failed to generate facts.'}), 500
 
+@app.route('/quotes')
+def quotes():
+    # Clear previous quotes on new request
+    session.pop('quotes', None)
+
+    # Create a unique prompt with a random element
+    unique_id = random.randint(1, 10000)  # Generates a random number
+    prompt = (
+        f"Generate 10 unique and inspirational quotes about life, success, and motivation. "
+        f"Each quote should be distinct and thought-provoking. "
+        f"Include a unique ID ({unique_id}) for this request to ensure the quotes are varied. "
+        "Format the response as a list, with each quote on a new line."
+    )
+
+    # Define the API endpoint and model
+    base_url = "https://api.sambanova.ai/v1/chat/completions"
+    model = "Meta-Llama-3.1-8B-Instruct"
+
+    # Prepare the payload
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.8,  # Increase temperature for more randomness
+        "top_p": 1.0,  # Use full probability mass
+        "stream": True
+    }
+
+    # Set the request headers
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    response_text = ""
+    try:
+        # Make a request to the SambaNova API
+        response = requests.post(base_url, json=payload, headers=headers, stream=True)
+        response.raise_for_status()  # Check for HTTP errors
+
+        # Stream and accumulate content from the response
+        for chunk in response.iter_lines():
+            if chunk:
+                chunk_decoded = chunk.decode('utf-8').lstrip('data: ')
+                if chunk_decoded == "[DONE]":
+                    break
+
+                try:
+                    data = json.loads(chunk_decoded)
+                    content = data['choices'][0]['delta'].get('content', '')
+                    response_text += content
+                except json.JSONDecodeError:
+                    print("Could not decode JSON from chunk:", chunk_decoded)
+
+        # Split the response into a list of quotes
+        quotes_list = response_text.strip().split('\n')
+        session['quotes'] = quotes_list  # Store quotes in session
+
+        return render_template('quotes.html', quotes=quotes_list)  # Render quotes.html with the quotes
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': 'Failed to generate quotes.'}), 500
+
 
 @app.route('/timer')
 def timer():
