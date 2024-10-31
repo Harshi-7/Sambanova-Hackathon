@@ -6,16 +6,16 @@
   <title>30-Day Dance Plan</title>
   <style>
     body {
-      background-color: #1c1c1c;
-      color: #ffa432;
+      background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+      color: #323C5C;
       font-family: Arial, sans-serif;
       min-height: 100vh;
       margin: 0;
       padding: 20px;
       overflow-y: auto; /* Allow body to scroll */
       display: flex;
-      justify-content: center;
-      align-items: flex-start; /* Align items to the top to start scrolling from the top */
+      flex-direction: column; /* Added to stack elements vertically */
+      align-items: center; /* Center the elements */
     }
 
     .grid-container {
@@ -70,7 +70,7 @@
     }
 
     .card-front {
-      background-color: #ffa432;
+      background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
       font-weight: bold;
     }
 
@@ -79,9 +79,46 @@
       transform: rotateY(180deg);
       padding-top: 20px;
     }
+
+    /* Styles for the save schedule form */
+    .save-schedule {
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #f7f7f7;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .save-schedule input, .save-schedule button {
+      padding: 10px;
+      margin: 5px 0;
+      width: calc(100% - 22px); /* Full width minus padding */
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .save-schedule button {
+      background-color: #ffa432;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .save-schedule button:hover {
+      background-color: #ff8b00;
+    }
   </style>
 </head>
 <body>
+  <div class="save-schedule">
+    <h3>Save Your Schedule</h3>
+    <input type="text" id="scheduleName" placeholder="Schedule Name" required>
+    <button onclick="saveSchedule()">Save Schedule</button>
+  </div>
+
   <div class="grid-container">
     <!-- Flashcards -->
     {% for item in plan %}
@@ -101,6 +138,35 @@
   <script>
     function toggleFlip(card) {
       card.classList.toggle('show-back');
+    }
+
+    function saveSchedule() {
+      const scheduleName = document.getElementById('scheduleName').value;
+      const plan = {{ plan | tojson }}; // Pass the plan to JavaScript
+
+      if (scheduleName && plan.length > 0) {
+        fetch('/save-schedule', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: scheduleName, tasks: plan }),
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('Schedule saved successfully!');
+            document.getElementById('scheduleName').value = ''; // Clear the input field
+          } else {
+            alert('Failed to save schedule.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while saving the schedule.');
+        });
+      } else {
+        alert('Please enter a schedule name and ensure there are tasks to save.');
+      }
     }
   </script>
 </body>

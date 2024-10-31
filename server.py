@@ -257,6 +257,7 @@ def timer():
 def card():
     return render_template('index.html')
 
+
 @app.route('/cards')
 def cards():
     plan = session.get('plan', [])
