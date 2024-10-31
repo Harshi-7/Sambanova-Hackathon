@@ -1,13 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Theme</title>
-    <link rel="stylesheet" href="">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FutureMe Header</title>
+  <style>
+    /* Header Styles */
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+      color: #323C5C;
+      padding: 30px 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #323C5C;
+      font-weight: bold;
+    }
+    .nav-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 80px;
+    }
+    .nav-links li {
+      display: inline;
+    }
+    .nav-links a {
+      color: #323C5C;
+      text-decoration: none;
+      font-size: 20px;
+      transition: color 0.3s ease;
+      font-weight: 600;
+    }
+    .nav-links a:hover {
+      color: #323C5C;
+    }
+  </style>
 </head>
 <body>
-    
-    
+
+  <!-- Header -->
+  <header class="header">
+    <h1>FutureMe</h1>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#timer">Timer</a></li>
+      <li><a href="#dashboard">Dashboard</a></li>
+    </ul>
+  </header>
+
 </body>
 </html>

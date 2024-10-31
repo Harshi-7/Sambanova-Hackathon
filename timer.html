@@ -113,9 +113,9 @@
             displayTime(countdown);
             document.getElementById("startButton").disabled = false;
 
-            // Change background image based on mode
+            // Change background image based on modebackground: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
             if (mode === 'pomodoro') {
-                document.body.style.backgroundImage = 'linear-gradient(to bottom right, #18293c, #aef1ee)'; // Pomodoro background
+                document.body.style.backgroundImage = 'linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%)'; // Pomodoro background
             } else if (mode === 'shortBreak') {
                 document.body.style.backgroundImage = 'linear-gradient(to bottom right, #aef1ee, #e6f7e9)'; // Short Break background
             } else if (mode === 'longBreak') {

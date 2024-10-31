@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      color: #323C5C;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #323C5C;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+    }
+    .sidebar h2 {
+      margin: 0;
+      padding: 10px;
+      font-size: 24px;
+      color: #FFEBD8;
+    }
+    .nav-links {
+      width: 100%;
+      margin-top: 20px;
+      list-style: none;
+      padding: 0;
+    }
+    .nav-links li {
+      width: 100%;
+    }
+    .nav-links li a {
+      display: block;
+      padding: 15px 20px;
+      color: #FFEBD8;
+      text-decoration: none;
+      font-size: 18px;
+      transition: background-color 0.3s ease;
+    }
+    .nav-links li a:hover {
+      background-color: #4b5987;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex-grow: 1;
+      background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .header {
+      background-color: #323C5C;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+    .card p {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <ul class="nav-links">
+      <li><a href="#goals">Goals</a></li>
+      <li><a href="#progress">Progress</a></li>
+      <li><a href="#settings">Settings</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="header">
+      <h1>Welcome to Your Dashboard</h1>
+    </div>
+    
+    <!-- Goals Section -->
+    <div class="card" id="goals">
+      <h3>Your Goals</h3>
+      <p>Here you can view and update your goals.</p>
+    </div>
+    
+    <!-- Progress Section -->
+    <div class="card" id="progress">
+      <h3>Progress</h3>
+      <p>Check your progress and track your milestones.</p>
+    </div>
+    
+    <!-- Settings Section -->
+    <div class="card" id="settings">
+      <h3>Settings</h3>
+      <p>Customize your experience and set preferences.</p>
+    </div>
+  </div>
+
+</body>
+</html>
