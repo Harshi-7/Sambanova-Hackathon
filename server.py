@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 import os
 import requests
 import json
+import random
 
 # Configure Flask to search the current folder for templates
 app = Flask(__name__, template_folder='.')
@@ -115,11 +116,17 @@ def generate_plan():
         print(f"Error: {e}")
         return jsonify({'error': 'Failed to generate plan.'}), 500
 
+
 @app.route('/facts')
 def facts():
-    # Create a prompt for generating 50 facts
+    # Clear previous facts on new request
+    session.pop('facts', None)
+
+    # Create a unique prompt with a random element
+    unique_id = random.randint(1, 10000)  # Generates a random number
     prompt = (
-        "Generate 50 unique and interesting facts on a variety of topics. Each fact should be different from the others. "
+        f"Generate 50 unique and interesting facts on a variety of topics. Each fact should be different from the others. "
+        f"Include a unique ID ({unique_id}) for this request to ensure the facts are varied. "
         "Format the response as a list, with each fact on a new line."
     )
 
@@ -134,8 +141,8 @@ def facts():
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt}
         ],
-        "temperature": 0.1,
-        "top_p": 0.1,
+        "temperature": 0.8,  # Increase temperature for more randomness
+        "top_p": 1.0,  # Use full probability mass
         "stream": True
     }
 
@@ -175,9 +182,14 @@ def facts():
         print(f"Error: {e}")
         return jsonify({'error': 'Failed to generate facts.'}), 500
 
+
 @app.route('/timer')
 def timer():
     return render_template('timer.html')  # Load timer.html from the same folder
+
+@app.route('/index')
+def card():
+    return render_template('index.html')
 
 @app.route('/cards')
 def cards():
