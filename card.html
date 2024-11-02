@@ -5,110 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>30-Day Dance Plan</title>
   <style>
+    /* General Styles */
     body {
+      margin: 0;
+      font-family: Arial, sans-serif;
       background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
       color: #323C5C;
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      overflow-y: auto; /* Allow body to scroll */
       display: flex;
-      flex-direction: column; /* Added to stack elements vertically */
-      align-items: center; /* Center the elements */
-    }
-
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-width: 1200px;
-      padding: 20px;
-      background-color: #2b2b2b;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .card {
-      perspective: 1000px;
-      cursor: pointer;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .card-inner {
-      position: relative;
-      width: 100%;
-      padding-top: 100%; /* Keeps the card square */
-      transform-style: preserve-3d;
-      transition: transform 0.6s;
-    }
-
-    .card.show-back .card-inner {
-      transform: rotateY(180deg);
-    }
-
-    .card-front,
-    .card-back {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 10px;
-      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 16px; /* Adjust font size if necessary */
-      color: black;
+      min-height: 100vh;
+      padding: 20px;
       box-sizing: border-box;
-      overflow-y: auto; 
-      padding-top: 20px;
-      text-align: left; /* Align text for better readability */
     }
 
-    .card-front {
-      background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
-      font-weight: bold;
-    }
-
-    .card-back {
-      background-color: #ff8b00;
-      transform: rotateY(180deg);
-      padding-top: 20px;
-    }
-
-    /* Styles for the save schedule form */
+    /* Save Schedule Section */
     .save-schedule {
       margin-bottom: 20px;
-      padding: 20px;
-      background-color: #f7f7f7;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 600px;
       text-align: center;
     }
 
-    .save-schedule input, .save-schedule button {
+    .save-schedule h3 {
+      font-size: 1.5em;
+      color: #323C5C;
+    }
+
+    .save-schedule input[type="text"] {
       padding: 10px;
-      margin: 5px 0;
-      width: calc(100% - 22px); /* Full width minus padding */
+      border: 1px solid #323C5C;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      margin-right: 10px;
     }
 
     .save-schedule button {
-      background-color: #ffa432;
-      color: white;
+      padding: 10px 15px;
       border: none;
+      border-radius: 5px;
+      background-color: #323C5C;
+      color: #FFEBD8;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     .save-schedule button:hover {
-      background-color: #ff8b00;
+      background-color: #0e193d;
+    }
+
+    /* Centered Container */
+    .centered-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    /* Task Card Styles */
+    .task-card {
+      width: 100%;
+      margin: 10px 0;
+      padding: 15px;
+      background-color: #FFEBD8;
+      color: #323C5C;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .task-day {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .task-content {
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+
+    /* Checkbox Styles */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      margin-right: 8px;
     }
   </style>
 </head>
@@ -119,54 +105,54 @@
     <button onclick="saveSchedule()">Save Schedule</button>
   </div>
 
-  <div class="grid-container">
-    <!-- Flashcards -->
+  <div class="centered-container">
+    <!-- Task Cards -->
     {% for item in plan %}
-    <div class="card" onclick="toggleFlip(this)">
-      <div class="card-inner">
-        <div class="card-front">
-          <h3>{{ item.day }}</h3> <!-- Display Day -->
-        </div>
-        <div class="card-back">
-          <p>{{ item.task }}</p> <!-- Display Task -->
-        </div>
+    <div class="task-card">
+      <div class="task-day">{{ item.day }}</div> <!-- Display Day -->
+      <div class="task-content">{{ item.task }}</div> <!-- Display Task -->
+      <div class="checkbox-container">
+        <input type="checkbox" id="task-{{ item.day }}" name="task-{{ item.day }}">
+        <label for="task-{{ item.day }}">Mark as Completed</label>
       </div>
     </div>
     {% endfor %}
   </div>
 
   <script>
-    function toggleFlip(card) {
-      card.classList.toggle('show-back');
-    }
+    const plan = {{ plan | tojson | safe }}; 
 
     function saveSchedule() {
       const scheduleName = document.getElementById('scheduleName').value;
-      const plan = {{ plan | tojson }}; // Pass the plan to JavaScript
 
-      if (scheduleName && plan.length > 0) {
-        fetch('/save-schedule', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name: scheduleName, tasks: plan }),
-        })
-        .then(response => {
-          if (response.ok) {
-            alert('Schedule saved successfully!');
-            document.getElementById('scheduleName').value = ''; // Clear the input field
-          } else {
-            alert('Failed to save schedule.');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while saving the schedule.');
-        });
-      } else {
-        alert('Please enter a schedule name and ensure there are tasks to save.');
+      if (!plan || plan.length === 0) {
+        alert('No tasks to save.');
+        return;
       }
+      if (!scheduleName) {
+        alert('Please enter a schedule name.');
+        return;
+      }
+
+      fetch('/save-schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: scheduleName, tasks: plan }),
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Schedule saved successfully!');
+          document.getElementById('scheduleName').value = ''; // Clear input
+        } else {
+          alert('Failed to save schedule.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the schedule.');
+      });
     }
   </script>
 </body>

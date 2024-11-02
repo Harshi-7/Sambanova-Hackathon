@@ -258,7 +258,8 @@ def card():
     return render_template('index.html')
 
 
-@app.route('/cards')
+
+@app.route('/card')
 def cards():
     plan = session.get('plan', [])
     print("Plan passed to cards:", plan)  # Debugging output
