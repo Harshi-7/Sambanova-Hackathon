@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from flask_sqlalchemy import SQLAlchemy
 import os
 import requests
 import json
 import random
+import bcrypt
 
 # Configure Flask to search the current folder for templates
 app = Flask(__name__, template_folder='.')
@@ -12,10 +14,6 @@ app.secret_key = os.urandom(24)  # Required for session management
 api_key = os.getenv("SAMBANOVA_API_KEY")
 if not api_key:
     raise ValueError("API key not found. Ensure it is set in the environment variables.")
-
-@app.route('/')
-def index():
-    return redirect(url_for('features'))  # Redirect to the features page
 
 @app.route('/features')
 def features():
@@ -253,20 +251,75 @@ def quotes():
 def timer():
     return render_template('timer.html')  # Load timer.html from the same folder
 
-@app.route('/index')
-def card():
-    return render_template('index.html')
-
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
-
-
 @app.route('/card')
 def cards():
     plan = session.get('plan', [])
     print("Plan passed to cards:", plan)  # Debugging output
     return render_template('card.html', plan=plan)  # Pass the plan to card.html
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+
+    def __init__(self, name, email, password):
+        self.name = name
+        self.email = email
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
+
+with app.app_context():
+    db.create_all()
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        # Add your registration logic here
+        name=request.form['name']
+        email=request.form['email']
+        password=request.form['password']
+
+        new_user=User(name=name,email=email,password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect('/login')
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        user = User.query.filter_by(email=email).first()
+        if user and user.check_password(password):
+            session['name'] = user.name
+            session['email'] = user.email
+            return redirect(url_for('features'))
+        else:
+            return render_template('login.html', error='Invalid email or password.')
+
+    return render_template('login.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/index')
+def indexs():
+    return render_template('index.html')
+
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
