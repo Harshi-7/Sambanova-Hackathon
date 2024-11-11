@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Saved Schedules</title>
+  <style>
+    /* General Styles */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+      color: #323C5C;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .schedule-container {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+    }
+
+    .schedule {
+      background-color: #FFEBD8;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+      padding: 15px;
+      color: #323C5C;
+    }
+
+    .schedule h3 {
+      font-size: 1.5em;
+      margin: 0;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .task-card {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .task-day {
+      font-weight: bold;
+      color: #323C5C;
+    }
+  </style>
+</head>
+<body>
+  <h2>Saved Schedules</h2>
+
+  <div class="schedule-container">
+    {% for schedule_name, tasks in schedules.items() %}
+    <div class="schedule">
+      <h3>{{ schedule_name }}</h3>
+      {% for task in tasks %}
+      <div class="task-card">
+        <div class="task-day">{{ task.day }}</div>
+        <div class="task-content">{{ task.task }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
+

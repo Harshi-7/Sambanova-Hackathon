@@ -20,7 +20,6 @@
       box-sizing: border-box;
     }
 
-    /* Save Schedule Section */
     .save-schedule {
       margin-bottom: 20px;
       text-align: center;
@@ -103,14 +102,15 @@
     <h3>Save Your Schedule</h3>
     <input type="text" id="scheduleName" placeholder="Schedule Name" required>
     <button onclick="saveSchedule()">Save Schedule</button>
+    <a href="{{ url_for('vs') }}">View Schedule</a>
+
   </div>
 
   <div class="centered-container">
-    <!-- Task Cards -->
     {% for item in plan %}
     <div class="task-card">
-      <div class="task-day">{{ item.day }}</div> <!-- Display Day -->
-      <div class="task-content">{{ item.task }}</div> <!-- Display Task -->
+      <div class="task-day">{{ item.day }}</div>
+      <div class="task-content">{{ item.task }}</div>
       <div class="checkbox-container">
         <input type="checkbox" id="task-{{ item.day }}" name="task-{{ item.day }}">
         <label for="task-{{ item.day }}">Mark as Completed</label>
@@ -120,7 +120,7 @@
   </div>
 
   <script>
-    const plan = {{ plan | tojson | safe }}; 
+    const plan = {{ plan | tojson | safe }};
 
     function saveSchedule() {
       const scheduleName = document.getElementById('scheduleName').value;

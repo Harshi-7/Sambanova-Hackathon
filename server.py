@@ -15,6 +15,65 @@ api_key = os.getenv("SAMBANOVA_API_KEY")
 if not api_key:
     raise ValueError("API key not found. Ensure it is set in the environment variables.")
 
+# Configure SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize SQLAlchemy only once
+db = SQLAlchemy(app)
+
+# User model for registration and login
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, name, email, password):
+        self.name = name
+        self.email = email
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
+
+# Schedule model to store generated schedules
+class Schedule(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    day = db.Column(db.String(20), nullable=False)
+    task = db.Column(db.Text, nullable=False)
+
+# Initialize database only once
+with app.app_context():
+    db.create_all()
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        new_user = User(name=name, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect('/login')
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user = User.query.filter_by(email=email).first()
+        if user and user.check_password(password):
+            session['name'] = user.name
+            session['email'] = user.email
+            return redirect(url_for('features'))
+        else:
+            return render_template('login.html', error='Invalid email or password.')
+    return render_template('login.html')
+
 @app.route('/features')
 def features():
     return render_template('features.html')  # Load features.html from the same folder
@@ -257,57 +316,30 @@ def cards():
     print("Plan passed to cards:", plan)  # Debugging output
     return render_template('card.html', plan=plan)  # Pass the plan to card.html
 
+@app.route('/save-schedule', methods=['POST'])
+def save_schedule():
+    data = request.get_json()
+    name = data.get('name')
+    tasks = data.get('tasks')
+    if not name or not tasks:
+        return jsonify({'error': 'Invalid schedule data.'}), 400
+    for task in tasks:
+        new_schedule = Schedule(name=name, day=task['day'], task=task['task'])
+        db.session.add(new_schedule)
+    db.session.commit()
+    return jsonify({'message': 'Schedule saved successfully.'}), 200
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-db = SQLAlchemy(app)
+@app.route('/vs')
+def vs():
+    schedules = Schedule.query.all()
+    schedule_dict = {}
+    for schedule in schedules:
+        if schedule.name not in schedule_dict:
+            schedule_dict[schedule.name] = []
+        schedule_dict[schedule.name].append({'day': schedule.day, 'task': schedule.task})
+    return render_template('vs.html', schedules=schedule_dict)
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-
-    def __init__(self, name, email, password):
-        self.name = name
-        self.email = email
-        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-    def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
-
-with app.app_context():
-    db.create_all()
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        # Add your registration logic here
-        name=request.form['name']
-        email=request.form['email']
-        password=request.form['password']
-
-        new_user=User(name=name,email=email,password=password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect('/login')
-    return render_template('register.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-
-        user = User.query.filter_by(email=email).first()
-        if user and user.check_password(password):
-            session['name'] = user.name
-            session['email'] = user.email
-            return redirect(url_for('features'))
-        else:
-            return render_template('login.html', error='Invalid email or password.')
-
-    return render_template('login.html')
 
 @app.route('/dashboard')
 def dashboard():
@@ -323,3 +355,5 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
