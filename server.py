@@ -179,12 +179,11 @@ def facts():
     # Clear previous facts on new request
     session.pop('facts', None)
 
-    # Create a unique prompt with a random element
-    unique_id = random.randint(1, 10000)  # Generates a random number
+    # Create a unique prompt without showing the unique ID
     prompt = (
-        f"Generate 50 unique and interesting facts on a variety of topics. Each fact should be different from the others. "
-        f"Include a unique ID ({unique_id}) for this request to ensure the facts are varied. "
-        "Format the response as a list, with each fact on a new line."
+        "Generate 50 unique and interesting facts on a variety of topics. Each fact should be different from the others. "
+        "Format the response as a list with bullet points, without numbering or any unique identifiers. "
+        "Each fact should be presented with a bullet point."
     )
 
     # Define the API endpoint and model
@@ -229,8 +228,14 @@ def facts():
                 except json.JSONDecodeError:
                     print("Could not decode JSON from chunk:", chunk_decoded)
 
-        # Split the response into a list of facts
-        facts_list = response_text.strip().split('\n')
+        # Clean up the response and split it into a list of facts
+        # Replacing any inconsistent bullet points with a single standard one
+        response_text = response_text.replace('•', '').replace('-', '•').replace('*', '•')
+
+        # Remove unwanted spaces or blank lines
+        facts_list = [
+            fact.strip() for fact in response_text.split('\n') if fact.strip()
+        ]
         session['facts'] = facts_list  # Store facts in session
 
         return render_template('facts.html', facts=facts_list)  # Render facts.html with the facts
@@ -238,6 +243,7 @@ def facts():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'error': 'Failed to generate facts.'}), 500
+
 
 @app.route('/quotes')
 def quotes():
@@ -304,11 +310,77 @@ def quotes():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'error': 'Failed to generate quotes.'}), 500
+    
+
+
+@app.route('/chatbot', methods=['GET', 'POST'])
+def chatbot():
+    if request.method == 'POST':
+        # Get the user message from the request (this will be JSON in the body)
+        user_message = request.json.get('message', '').strip()
+
+        # Validate that the user message is not empty
+        if not user_message:
+            return jsonify({'error': 'Message cannot be empty.'}), 400
+
+        # Define the API endpoint and model
+        base_url = "https://api.sambanova.ai/v1/chat/completions"
+        model = "Meta-Llama-3.1-8B-Instruct"
+
+        # Prepare the payload for the API request
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": user_message}
+            ],
+            "temperature": 0.7,  # Adjust randomness
+            "top_p": 1.0,
+            "stream": True
+        }
+
+        # Set the request headers
+        headers = {
+            "Authorization": f"Bearer {api_key}",  # Replace with your actual API key
+            "Content-Type": "application/json"
+        }
+
+        response_text = ""
+        try:
+            # Make a request to the SambaNova API
+            response = requests.post(base_url, json=payload, headers=headers, stream=True)
+            response.raise_for_status()  # Check for HTTP errors
+
+            # Stream and accumulate content from the response
+            for chunk in response.iter_lines():
+                if chunk:
+                    chunk_decoded = chunk.decode('utf-8').lstrip('data: ')
+                    if chunk_decoded == "[DONE]":
+                        break
+
+                    try:
+                        data = json.loads(chunk_decoded)
+                        content = data['choices'][0]['delta'].get('content', '')
+                        response_text += content
+                    except json.JSONDecodeError:
+                        print("Could not decode JSON from chunk:", chunk_decoded)
+
+            return jsonify({'response': response_text.strip()})
+
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({'error': 'Failed to generate chatbot response.'}), 500
+
+    return render_template('chatbot.html')  # Render the chatbot UI
+
+
 
 
 @app.route('/timer')
 def timer():
     return render_template('timer.html')  # Load timer.html from the same folder
+
+
 
 @app.route('/card')
 def cards():
@@ -355,5 +427,4 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
 

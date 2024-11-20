@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facts</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+            min-height: 100vh;
+            color: #323C5C;
+        }
+
+        /* Header Styling */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #0e193d;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #646464;
+        }
+
+        /* Facts List Styling */
+        .facts-container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        ul {
+            list-style-type: disc; /* Use bullet points */
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        /* Button Styling */
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #323C5C;
+            margin-bottom: 10px;
+            color: #FFEBD8;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0e193d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Interesting Facts</h1>
+        <p>Here are 50 unique and intriguing facts just for you!</p>
+    </header>
+    <div class="facts-container">
+        <ul>
+            {% for fact in facts %}
+                <li>{{ fact }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="button-container">
+        <form action="/facts" method="get">
+            <button type="submit">Generate New Facts</button>
+        </form>
+    </div>
+</body>
+</html>

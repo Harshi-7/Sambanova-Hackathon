@@ -45,11 +45,28 @@
       background-color: #fff;
       border-radius: 5px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .task-day {
       font-weight: bold;
       color: #323C5C;
+    }
+
+    .task-content {
+      flex-grow: 1;
+    }
+
+    .task-checkbox {
+      margin-left: 10px;
+    }
+
+    .percentage {
+      font-size: 1.2em;
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -62,13 +79,73 @@
       <h3>{{ schedule_name }}</h3>
       {% for task in tasks %}
       <div class="task-card">
-        <div class="task-day">{{ task.day }}</div>
+        <!-- Display the day with a checkbox next to it -->
+        <div class="task-day">
+          {{ task.day }}
+          <input type="checkbox" class="task-checkbox" id="day-{{ task.day }}" data-day="{{ task.day }}" onchange="updatePercentage()">
+        </div>
+        <!-- Display the task content -->
         <div class="task-content">{{ task.task }}</div>
       </div>
       {% endfor %}
     </div>
     {% endfor %}
   </div>
+
+  <div class="percentage" id="percentage">Progress: 0%</div>
+
+  <script>
+    // Function to load the checkbox states from localStorage
+    function loadCheckboxStates() {
+      const checkboxes = document.querySelectorAll('.task-checkbox');
+      checkboxes.forEach(checkbox => {
+        const isChecked = localStorage.getItem(checkbox.id) === 'true';
+        checkbox.checked = isChecked;
+      });
+    }
+
+    // Function to save checkbox state and percentage to localStorage
+    function saveData() {
+      const checkboxes = document.querySelectorAll('.task-checkbox');
+      const totalTasks = checkboxes.length;
+      const checkedTasks = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+
+      // Calculate the percentage
+      const percentage = (checkedTasks / totalTasks) * 100;
+
+      // Save each checkbox state
+      checkboxes.forEach(checkbox => {
+        localStorage.setItem(checkbox.id, checkbox.checked);
+      });
+
+      // Save the percentage
+      localStorage.setItem('progressPercentage', percentage);
+    }
+
+    // Update percentage and save data when any checkbox is clicked
+    function updatePercentage() {
+      const checkboxes = document.querySelectorAll('.task-checkbox');
+      const totalTasks = checkboxes.length;
+      const checkedTasks = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+      const percentage = (checkedTasks / totalTasks) * 100;
+
+      // Display the percentage
+      document.getElementById('percentage').textContent = `Progress: ${Math.round(percentage)}%`;
+
+      // Save the checkbox state and percentage to localStorage
+      saveData();
+    }
+
+    // Load the checkbox states and the saved percentage when the page loads
+    window.onload = function() {
+      loadCheckboxStates();
+      
+      // Retrieve the saved progress percentage from localStorage and display it
+      const savedPercentage = localStorage.getItem('progressPercentage');
+      if (savedPercentage) {
+        document.getElementById('percentage').textContent = `Progress: ${Math.round(savedPercentage)}%`;
+      }
+    };
+  </script>
 </body>
 </html>
-
