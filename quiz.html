@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        /* Color palette styles */
+        body {
+            background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+            color: #323C5C;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;  
+        }
+
+        .container {
+            max-width: 750px;  
+            width: 100%; /* Ensures it takes the full width inside */
+            padding: 30px;  /* Increased padding for more space */
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;  /* Enable vertical scrolling */
+            max-height: 85vh;  /* Increased height to allow more content */
+        }
+
+        .btn-custom {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #323C5C;
+            color: #FFEBD8;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-custom:hover {
+            background-color: #0e193d;
+        }
+
+        .btn-register {
+            margin-top: 30px;
+        }
+
+        /* Additional styles */
+        .correct-answer {
+            display: none; /* Hidden by default */
+            color: green;
+        }
+
+        .view-solution {
+            cursor: pointer;
+            color: #323C5C;
+            text-decoration: underline;
+        }
+
+        hr {
+            border: 1px solid #f0f0f0;
+        }
+
+        p {
+            font-size: 1.1em;  /* Slightly larger font for questions */
+        }
+
+        .view-solution {
+            font-size: 1.1em;  /* Slightly larger font for solution toggle */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz on "{{ topic }}"</h1>
+        <form>
+            {% for q in quiz %}
+                <div>
+                    <p><b>{{ q.question }}</b></p> 
+                    {% for option in q.options %}
+                        <input type="radio" name="q{{ loop.index }}" value="{{ option }}"> {{ option }}<br>
+                    {% endfor %}
+                    <p class="view-solution" onclick="toggleSolution({{ loop.index }})">View Solution</p>
+                    <div id="solution-{{ loop.index }}" class="correct-answer">
+                        <i>Correct Answer: {{ q.correct_answer }}</i>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
+        </form>
+    </div>
+
+    <script>
+        // Function to toggle the visibility of the solution div
+        function toggleSolution(index) {
+            const solutionDiv = document.getElementById(`solution-${index}`);
+            if (solutionDiv.style.display === 'none' || solutionDiv.style.display === '') {
+                solutionDiv.style.display = 'block';  // Show the correct answer
+            } else {
+                solutionDiv.style.display = 'none';  // Hide the correct answer
+            }
+        }
+    </script>
+</body>
+</html>

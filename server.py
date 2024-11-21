@@ -313,6 +313,86 @@ def quotes():
     
 
 
+
+
+
+# @app.route('/quiz', methods=['GET', 'POST'])
+# def quiz():
+#     session.pop('quiz', None)  # Clear previous quiz
+
+#     if request.method == 'POST':
+#         topic = request.form.get('topic')  # Get the topic from the form
+#         if not topic:
+#             return jsonify({'error': 'Topic is required'}), 400
+#     else:
+#         return render_template('quiz_form.html')  # Show form if GET request
+
+#     print(f"Generating quiz for topic: {topic}")  # Debugging
+
+#     # API prompt for generating quiz
+#     prompt = (
+#         f"Create a quiz on {topic} with 5 questions. Each question should include: "
+#         "1 question and 4 multiple-choice options, with the correct answer marked as the first option. "
+#         "Format: Question: followed by options on the next lines."
+#     )
+
+#     base_url = "https://api.sambanova.ai/v1/chat/completions"
+#     model = "Meta-Llama-3.1-8B-Instruct"
+#     payload = {
+#         "model": model,
+#         "messages": [
+#             {"role": "system", "content": "You are a helpful assistant."},
+#             {"role": "user", "content": prompt}
+#         ],
+#         "temperature": 0.7,
+#         "top_p": 1.0,
+#         "stream": False
+#     }
+#     headers = {
+#         "Authorization": f"Bearer {api_key}",
+#         "Content-Type": "application/json"
+#     }
+
+#     try:
+#         response = requests.post(base_url, json=payload, headers=headers)
+#         response.raise_for_status()
+#         data = response.json()
+        
+#         if "choices" in data and data["choices"]:
+#             response_text = data["choices"][0].get("message", {}).get("content", "")
+#             print("Generated Quiz Response:", response_text)  # Debugging
+
+#             # Parse the quiz text into structured data
+#             quiz_list = []
+#             raw_questions = response_text.strip().split('\n\n')  # Assuming each question block is separated by a blank line
+            
+#             for raw_question in raw_questions:
+#                 lines = raw_question.strip().split('\n')
+#                 if len(lines) >= 2:
+#                     question = lines[0].strip()
+#                     options = [line.strip() for line in lines[1:]]
+#                     if len(options) == 4:  # Ensure there are exactly 4 options
+#                         quiz_list.append({"question": question, "options": options})
+
+#             if quiz_list:
+#                 session['quiz'] = quiz_list  # Store the quiz in session
+#                 return render_template('quiz.html', quiz=quiz_list, topic=topic)
+#             else:
+#                 return jsonify({'error': 'Failed to parse quiz data.'}), 500
+
+#         else:
+#             print("API did not return valid choices.")
+#             return jsonify({'error': 'API response is invalid.'}), 500
+
+#     except Exception as e:
+#         print(f"Error occurred: {e}")
+#         return jsonify({'error': 'Failed to generate quiz due to an error.'}), 500
+
+
+
+    
+
+
 @app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
     if request.method == 'POST':
@@ -375,12 +455,99 @@ def chatbot():
 
 
 
+@app.route('/quiz', methods=['GET', 'POST'])
+def quiz():
+    if request.method == 'POST':
+        # Check if the user is submitting answers
+        if 'quiz' in session:
+            quiz_list = session['quiz']
+            results = []
+            for idx, q in enumerate(quiz_list):
+                user_answer = request.form.get(f'q{idx}')
+                correct_answer = q['correct_answer']
+                is_correct = user_answer == correct_answer
+                results.append({
+                    "question": q["question"],
+                    "user_answer": user_answer,
+                    "correct_answer": correct_answer,
+                    "is_correct": is_correct
+                })
+            return render_template('quiz.html', quiz=quiz_list, topic=session.get('topic'), results=results)
+
+    # Generate quiz on GET request
+    session.pop('quiz', None)  # Clear previous quiz
+    if request.method == 'POST':
+        topic = request.form.get('topic', '').strip()
+        if not topic:
+            return render_template('quiz_form.html', error="Topic is required.")  # Show error if topic is missing
+
+        prompt = (
+            f"Create a quiz on the topic '{topic}' with 5 questions. Each question should include:\n"
+            "1 question and 4 multiple-choice options, with the correct answer marked as the first option.\n"
+            "Format: Question: [question text] followed by options on separate lines, e.g.,\n"
+            "1. Option 1\n2. Option 2\n3. Option 3\n4. Option 4."
+        )
+
+        base_url = "https://api.sambanova.ai/v1/chat/completions"
+        model = "Meta-Llama-3.1-8B-Instruct"
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.7,
+            "top_p": 1.0,
+            "stream": False
+        }
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+
+        try:
+            response = requests.post(base_url, json=payload, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+
+            if "choices" in data and data["choices"]:
+                response_text = data["choices"][0].get("message", {}).get("content", "")
+                print("Generated Quiz Response:", response_text)  # Debugging
+
+                quiz_list = []
+                raw_questions = response_text.strip().split('\n\n')  # Each question block is separated by blank lines
+
+                for raw_question in raw_questions:
+                    lines = raw_question.strip().split('\n')
+                    if len(lines) >= 5:  # Ensure each block contains a question + 4 options
+                        question = lines[0].replace('Question:', '').strip()
+                        options = [line.strip() for line in lines[1:5]]  # Extract exactly 4 options
+                        correct_answer = options[0]  # First option is the correct answer
+                        quiz_list.append({"question": question, "options": options, "correct_answer": correct_answer})
+
+                if quiz_list:
+                    session['quiz'] = quiz_list  # Store the quiz in session
+                    session['topic'] = topic
+                    return render_template('quiz.html', quiz=quiz_list, topic=topic)
+                else:
+                    return render_template('quiz_form.html', error="Failed to parse quiz data.")
+
+            else:
+                return render_template('quiz_form.html', error="API response is invalid.")
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            return render_template('quiz_form.html', error="Failed to generate quiz due to an error.")
+
+    return render_template('quiz_form.html')
 
 @app.route('/timer')
 def timer():
     return render_template('timer.html')  # Load timer.html from the same folder
 
-
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/card')
 def cards():
@@ -427,4 +594,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

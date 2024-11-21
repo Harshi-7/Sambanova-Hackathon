@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate a Quiz</title>
+    <style>
+        /* Color palette styles */
+        body {
+            background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+            color: #323C5C;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            height: auto;  /* Make the container height adjust based on content */
+            overflow: hidden;  /* Prevent scrolling */
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            color: #323C5C;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #323C5C;
+        }
+
+        input[type="text"] {
+            width: 95%;
+            padding: 10px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            border: 1px solid #323C5C;
+            border-radius: 5px;
+            background-color: #f8f8f8;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #323C5C;
+            color: #FFEBD8;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0e193d;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate a Quiz</h1>
+        <form method="POST" action="/quiz">
+            <label for="topic">Enter a Topic:</label>
+            <input type="text" id="topic" name="topic" placeholder="e.g., Space, AI, History" required>
+            <button type="submit">Generate Quiz</button>
+        </form>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

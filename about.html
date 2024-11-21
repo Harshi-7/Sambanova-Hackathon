@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - FutureMe</title>
+    <style>
+        /* Reset all elements' padding and margin */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+            color: #323C5C;
+            padding: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            height: 60px;
+        }
+        .header h1 {
+            font-size: 28px;
+            color: #323C5C;
+            font-weight: bold;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 80px;
+        }
+        .nav-links a {
+            color: #323C5C;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: #323C5C;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f7f9;
+            color: #323C5C;
+            line-height: 1.6;
+        }
+        .about-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(180deg, #0e193d5d 0%, #FFEBD8 100%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .about-heading {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .about-text {
+            font-size: 20px;
+            margin: 15px 0;
+            text-align: justify;
+        }
+        .features {
+            margin: 20px 0;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features ul li {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .features ul li:before {
+            content: "✔️";
+            margin-right: 10px;
+            color: #323C5C;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <h1>FutureMe</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/quiz">Quiz</a></li>
+                <li><a href="/chatbot">Chatbot</a></li>
+                <li><a href="https://www.linkedin.com/in/bharadi-harshitha">Contact Us</a></li>
+                <li><a href="#">About Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- About Us Content -->
+    <div class="about-container">
+        <h2 class="about-heading">About FutureMe</h2>
+        <p class="about-text">
+            Welcome to FutureMe, your ultimate productivity companion designed to help you focus and achieve your goals. In a world filled with distractions, we believe that staying on track should be easy and engaging. 
+        </p>
+        <p class="about-text">
+            FutureMe stands out by combining advanced tools and delightful experiences to keep you in the zone. Whether you're working, studying, or simply planning your day, FutureMe is here to ensure that nothing derails your focus.
+        </p>
+
+        <div class="features">
+            <h3>Key Features</h3>
+            <ul>
+                <li>A smart chatbot that detects when you're losing focus and nudges you back on track.</li>
+                <li>An interactive quiz generator that challenges you to refocus with fun and engaging prompts.</li>
+                <li>For moments when you need a little break, our app generates personalized quotes, memes, or fun facts to lift your spirits.</li>
+                <li>A clean and distraction-free interface designed with simplicity and efficiency in mind.</li>
+            </ul>
+        </div>
+
+        <p class="about-text">
+            Whether you're here to work hard or take a well-deserved break, FutureMe adapts to your needs and keeps things exciting. Let us help you create the future you dream of—one step at a time.
+        </p>
+    </div>
+</body>
+</html>
